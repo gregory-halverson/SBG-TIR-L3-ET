@@ -40,7 +40,9 @@ from BESS_JPL import BESS_JPL
 from PMJPL import PMJPL
 from STIC_JPL import STIC_JPL
 from PTJPLSM import PTJPLSM
-from verma_net_radiation import process_verma_net_radiation, daily_Rn_integration_verma, SHA_deg_from_doy_lat, sunrise_from_SHA, daylight_from_SHA
+from verma_net_radiation import process_verma_net_radiation, daily_Rn_integration_verma
+
+from sun_angles import SHA_deg_from_DOY_lat, sunrise_from_SHA, daylight_from_SHA
 
 from .version import __version__
 from .constants import *
@@ -769,7 +771,7 @@ def L3T_L4T_JET(
         ## FIXME need to revise evaporative fraction to take soil heat flux into account
         EF = rt.where((ETinst == 0) | (Rn == 0), 0, ETinst / Rn)
 
-        SHA = SHA_deg_from_doy_lat(day_of_year, geometry.lat)
+        SHA = SHA_deg_from_DOY_lat(day_of_year, geometry.lat)
         sunrise_hour = sunrise_from_SHA(SHA)
         daylight_hours = daylight_from_SHA(SHA)
 
