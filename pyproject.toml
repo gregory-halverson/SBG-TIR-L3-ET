@@ -15,7 +15,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "BESS-JPL",
+    "BESS-JPL>=1.10.0",
     "check-distribution",
     "colored-logging",
     "ECOv002-granules",

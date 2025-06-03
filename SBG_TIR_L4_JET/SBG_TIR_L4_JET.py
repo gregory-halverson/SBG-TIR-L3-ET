@@ -653,19 +653,19 @@ def L3T_L4T_JET(
         Rn_verma = verma_results["Rn"]
 
         if Rn_model_name == "verma":
-            Rn = Rn_verma
+            Rn_Wm2 = Rn_verma
         elif Rn_model_name == "BESS":
-            Rn = Rn_BESS
+            Rn_Wm2 = Rn_BESS
         else:
             raise ValueError(f"unrecognized net radiation model: {Rn_model_name}")
 
-        if np.all(np.isnan(Rn)) or np.all(Rn == 0):
+        if np.all(np.isnan(Rn_Wm2)) or np.all(Rn_Wm2 == 0):
             raise BlankOutput(f"blank net radiation output for orbit {orbit} scene {scene} tile {tile} at {time_UTC} UTC")
 
         STIC_results = STIC_JPL(
             geometry=geometry,
             time_UTC=time_UTC,
-            Rn_Wm2=Rn,
+            Rn_Wm2=Rn_Wm2,
             RH=RH,
             # Rg_Wm2=SWin,
             Ta_C=Ta_C_smooth,
@@ -689,7 +689,7 @@ def L3T_L4T_JET(
             emissivity=emissivity,
             NDVI=NDVI,
             albedo=albedo,
-            Rn=Rn,
+            Rn_Wm2=Rn_Wm2,
             Ta_C=Ta_C,
             RH=RH,
             soil_moisture=SM,
@@ -759,7 +759,7 @@ def L3T_L4T_JET(
             Ta_C=Ta_C,
             RH=RH,
             elevation_km=elevation_km,
-            Rn=Rn
+            Rn=Rn_Wm2
         )
 
         LE_PMJPL = PMJPL_results["LE"]
@@ -769,14 +769,14 @@ def L3T_L4T_JET(
             geometry=geometry)
 
         ## FIXME need to revise evaporative fraction to take soil heat flux into account
-        EF = rt.where((ETinst == 0) | (Rn == 0), 0, ETinst / Rn)
+        EF = rt.where((ETinst == 0) | (Rn_Wm2 == 0), 0, ETinst / Rn_Wm2)
 
         SHA = SHA_deg_from_DOY_lat(day_of_year, geometry.lat)
         sunrise_hour = sunrise_from_SHA(SHA)
         daylight_hours = daylight_from_SHA(SHA)
 
         Rn_daily = daily_Rn_integration_verma(
-            Rn=Rn,
+            Rn=Rn_Wm2,
             hour_of_day=hour_of_day,
             doy=day_of_year,
             lat=geometry.lat,
@@ -923,7 +923,7 @@ def L3T_L4T_JET(
             metadata=metadata
         )
 
-        logger.info(f"finished L3T L4T JET run in {cl.time(timer)} seconds")
+        logger.info(f"finished L3T L4T JET run in {cl.time(timer.tocvalue())} seconds")
 
     except (BlankOutput, BlankOutputError) as exception:
         logger.exception(exception)
